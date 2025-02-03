@@ -109,3 +109,15 @@ def set_initial_state():
 
     if "chunk_overlap" not in st.session_state:
         st.session_state["chunk_overlap"] = 200
+
+    if "enable_evaluation" not in st.session_state:
+        st.session_state["enable_evaluation"] = False
+        
+    if "eval_metrics" not in st.session_state:
+        st.session_state["eval_metrics"] = None
+        
+    if "eval_results" not in st.session_state:
+        st.session_state["eval_results"] = None
+
+    if "eval_history" not in st.session_state:
+        st.session_state["eval_history"] = []

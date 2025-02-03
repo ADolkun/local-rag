@@ -105,8 +105,8 @@ def load_files(data_dir: str):
         return nodes
     
     except Exception as err:
-        logs.log.error(f"Error creating data index: {err}")
-        raise Exception(f"Error creating data index: {err}")
+        logs.log.error(f"File loading error: {err}")
+        raise
     finally:
         for file in os.scandir(data_dir):
             if file.is_file() and not file.name.startswith(
@@ -161,7 +161,7 @@ def create_index(_nodes):
 ###################################
 
 
-# @st.cache_resource(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def create_query_engine(_nodes):
     """
     Creates a query engine from the provided nodes.

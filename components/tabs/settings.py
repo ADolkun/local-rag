@@ -100,6 +100,49 @@ def settings():
                 value=st.session_state["chunk_overlap"],
             )
 
+    st.subheader(
+            "Retrieval Evaluation",
+            help="Evaluate retrieval performance using test questions generated from your files",
+        )
+    eval_settings = st.container(border=True)
+    with eval_settings:
+        st.checkbox(
+            "Enable Retrieval Evaluation",
+            key="enable_evaluation",
+            disabled=not st.session_state.get("nodes", None)
+        )
+    
+    if st.session_state.get("eval_metrics", None):
+        tab1, tab2 = st.tabs(["Core Metrics", "Advanced"])
+        with tab1:
+            cols = st.columns(2)
+            cols[0].metric(
+                "Hit Rate", 
+                f"{st.session_state['eval_metrics']['hit_rate']*100:.1f}%",
+                help="Percentage of queries where correct document was in top results"
+            )
+            cols[1].metric(
+                "MRR", 
+                f"{st.session_state['eval_metrics']['mrr']:.2f}",
+                help="Mean Reciprocal Rank of first correct document"
+            )
+        
+        with tab2:
+            st.caption("Additional Statistics")
+            st.write(f"Total Queries: {len(st.session_state['eval_results'])}")
+            st.write(f"Evaluation Time: {st.session_state['eval_metrics'].get('eval_time', 'N/A')}")
+
+            if len(st.session_state["eval_history"]) > 0:
+                with st.expander("Evaluation History", expanded=False):
+                    for entry in reversed(st.session_state["eval_history"]):
+                        st.caption(f"{entry['timestamp']}")
+                        cols = st.columns(2)
+                        cols[0].metric("Hit Rate", f"{entry['metrics']['hit_rate']*100:.1f}%")
+                        cols[1].metric("MRR", f"{entry['metrics']['mrr']:.2f}")
+                    
+                    if st.button("Clear History", use_container_width=True):
+                        st.session_state.eval_history = []
+
     st.subheader("Export Data")
     export_data_settings = st.container(border=True)
     with export_data_settings:
@@ -117,3 +160,4 @@ def settings():
         with st.expander("Current Application State"):
             state = dict(sorted(st.session_state.items()))
             st.write(state)
+
