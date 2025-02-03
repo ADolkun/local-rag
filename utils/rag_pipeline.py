@@ -134,27 +134,6 @@ def rag_pipeline(uploaded_files: list = None):
         )
         st.session_state["query_engine"] = query_engine
         st.caption("✔️ Created File Index")
-
-        if st.session_state["enable_evaluation"]:
-            with st.spinner("Running system evaluation..."):
-                try:
-                    eval_dataset = eval.generate_eval_dataset(
-                        st.session_state["nodes"],
-                        st.session_state["llm"]
-                    )
-                    retrieval_metrics, eval_results = eval.evaluate_retrieval(
-                        query_engine,
-                        eval_dataset
-                    )
-                    st.session_state["eval_metrics"] = retrieval_metrics
-                    st.session_state["eval_results"] = eval_results
-                    
-                    st.session_state["eval_history"].append({
-                        "timestamp": datetime.now().strftime("%m-%d %H:%M:%S"),
-                        "metrics": retrieval_metrics
-                    })
-                except Exception as e:
-                    st.error(f"Evaluation failed: {str(e)}")
     except Exception as err:
         logs.log.error(f"Index Creation Error: {str(err)}")
         error = err

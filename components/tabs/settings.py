@@ -1,10 +1,10 @@
 import json
+from datetime import datetime
 
 import streamlit as st
 
 import utils.ollama as ollama
-
-from datetime import datetime
+from utils.evaluation import run_retrieval_evaluation
 
 
 def settings():
@@ -106,11 +106,18 @@ def settings():
         )
     eval_settings = st.container(border=True)
     with eval_settings:
-        st.checkbox(
-            "Enable Retrieval Evaluation",
-            key="enable_evaluation",
-            disabled=not st.session_state.get("nodes", None)
-        )
+        if st.button(
+            "Run Evaluation Now",
+            disabled=not st.session_state["nodes"],
+            help="Generate new evaluation using current documents and settings",
+            use_container_width=True
+        ):
+            with st.spinner("Running evaluation..."):
+                try:
+                    run_retrieval_evaluation()
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Evaluation failed: {str(e)}")
     
     if st.session_state.get("eval_metrics", None):
         tab1, tab2 = st.tabs(["Core Metrics", "Advanced"])
@@ -129,7 +136,7 @@ def settings():
         
         with tab2:
             st.caption("Additional Statistics")
-            st.write(f"Total Queries: {len(st.session_state['eval_results'])}")
+            st.write(f"Total Queries: {st.session_state['eval_metrics'].get('num_queries', 'N/A')}")
             st.write(f"Evaluation Time: {st.session_state['eval_metrics'].get('eval_time', 'N/A')}")
 
             if len(st.session_state["eval_history"]) > 0:
@@ -137,8 +144,16 @@ def settings():
                     for entry in reversed(st.session_state["eval_history"]):
                         st.caption(f"{entry['timestamp']}")
                         cols = st.columns(2)
-                        cols[0].metric("Hit Rate", f"{entry['metrics']['hit_rate']*100:.1f}%")
-                        cols[1].metric("MRR", f"{entry['metrics']['mrr']:.2f}")
+                        cols[0].metric(
+                            "Hit Rate", 
+                            f"{entry['metrics']['hit_rate']*100:.1f}%",
+                            help="Historical hit rate"
+                        )
+                        cols[1].metric(
+                            "MRR", 
+                            f"{entry['metrics']['mrr']:.2f}",
+                            help="Historical mean reciprocal rank"
+                        )
                     
                     if st.button("Clear History", use_container_width=True):
                         st.session_state.eval_history = []
