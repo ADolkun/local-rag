@@ -74,8 +74,8 @@ def set_initial_state():
     if "llm" not in st.session_state:
         st.session_state["llm"] = None
 
-    if "documents" not in st.session_state:
-        st.session_state["documents"] = None
+    if "nodes" not in st.session_state:
+        st.session_state["nodes"] = None
 
     if "query_engine" not in st.session_state:
         st.session_state["query_engine"] = None
@@ -92,7 +92,7 @@ def set_initial_state():
 
     if "system_prompt" not in st.session_state:
         st.session_state["system_prompt"] = (
-            "You are a sophisticated virtual assistant designed to assist users in comprehensively understanding and extracting insights from a wide range of documents at their disposal. Your expertise lies in tackling complex inquiries and providing insightful analyses based on the information contained within these documents."
+            "You are a sophisticated virtual assistant designed to assist users in comprehensively understanding and extracting insights from a wide range of files at their disposal. Your expertise lies in tackling complex inquiries and providing insightful analyses based on the information contained within these files."
         )
 
     if "top_k" not in st.session_state:

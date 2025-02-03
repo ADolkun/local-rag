@@ -35,7 +35,7 @@ def settings():
             st.select_slider(
                 "Top K",
                 options=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                help="The number of most similar documents to retrieve in response to a query.",
+                help="The number of most similar nodes to retrieve in response to a query.",
                 value=st.session_state["top_k"],
                 key="top_k",
             )

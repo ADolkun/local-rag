@@ -9,9 +9,9 @@ Note: To better understand what is happening under the hood and aid in troublesh
 Each stage of the RAG pipeline stores its data in the application state. 
 
 In order for a successful RAG conversation to take place the following state values must NOT be null:
-- `documents` - if null, there was an error processing your documents
+- `nodes` - if null, there was an error processing your files
 - `llm` - if null, there was an error creating the Ollama LLM instance
-- `query_engine` - if null, errors occurred when creating embeddings for your your documents
+- `query_engine` - if null, errors occurred when creating embeddings for your your files
 
 To view the current application state:
 - Navigate to the Settings panel
@@ -25,4 +25,4 @@ By default, Local RAG will create a `local-rag.log` file in the root application
 
 Each step of the RAG process is logged into this file whether the required step was successful or encountered an error. 
 
-Reviewing this log can give you insights into what took place when processing your documents.
+Reviewing this log can give you insights into what took place when processing your files.

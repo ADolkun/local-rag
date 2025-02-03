@@ -25,7 +25,7 @@ def github_repo():
 
         with st.spinner("Processing..."):
             if repo_processed is True:
-                # Initiate the RAG pipeline, providing documents to be saved on disk if necessary
+                # Initiate the RAG pipeline, providing files to be saved on disk if necessary
                 error = rag.rag_pipeline()
                 
                 if error is not None:
