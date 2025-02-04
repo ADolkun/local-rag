@@ -1,4 +1,4 @@
-import os, re
+import os
 import streamlit as st
 
 from llama_index.core import (
@@ -11,80 +11,11 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.core.node_parser import SentenceSplitter
 
 import utils.logs as logs
+import utils.latex_helper as latex_helper
 
 # This is not used but required by llama-index and must be set FIRST
 os.environ["OPENAI_API_KEY"] = "sk-abc123"
 
-import re
-
-latex_pattern = re.compile(
-    r"""
-    (?P<dollar>\${1,2})(?P<dcontent>.+?)\1  # Matches $...$ or $$...$$
-    |
-    \\begin\{(?P<env>equation|align|gather|multline)\*?\}
-        (?P<env_content>.+?)
-    \\end\{(?P=env)\*?\}
-    |
-    \\?\[(?P<brack>.+?)\\?\]   # Matches \[...\]
-    |
-    \\?\((?P<inline>.+?)\\?\)  # Matches \(...\)
-    |
-    \\begin\{(?P<xtd_env>lemma|theorem|proof)\}
-        (?P<xtd_content>.+?)
-    \\end\{(?P=xtd_env)\}
-    |
-    \\DeclareMathOperator\*?\{(?P<decl_op>[A-Za-z]+)\}\{(?P<decl_expr>.+?)\}
-    |
-    \\ensuremath\{(?P<ensure>.+?)\}
-    """,
-    re.DOTALL | re.VERBOSE
-)
-
-def normalize_expression(expr: str) -> str:
-    """
-    Math-specific normalization without adding extra spaces around operators.
-    """
-    expr = re.sub(
-        r'\\operatorname\*?\{([^{}]+)\}',
-        lambda m: '\\' + m.group(1).replace(' ', ''),
-        expr
-    )
-    # Remove any spaces immediately following one or more backslashes.
-    expr = re.sub(r'(\\+)\s+', r'\1', expr)
-    # Remove \text{...} or \mbox{...} blocks entirely.
-    expr = re.sub(r'\\(text|mbox)\s*\{.*?\}', '', expr)
-    # Remove or normalize spaces around certain operators
-    operators = r'([=+\-*/^<>:;])'
-    expr = re.sub(rf'\s*{operators}\s*', r'\1', expr)
-    #  Collapse all other internal whitespace to a single space and strip leading/trailing space.
-    expr = ' '.join(expr.split()).strip()
-
-    return expr
-
-def insert_latex_inline(text: str):
-    """Extract LaTeX expressions from text"""
-    new_text = []
-    last_end = 0
-
-    for match in latex_pattern.finditer(text):
-        start, end = match.span()
-        new_text.append(text[last_end:start])
-
-        expr_text = None
-        for group in ['dcontent', 'env_content', 'inline', 'brack',
-                      'xtd_content', 'ensure', 'decl_expr']:
-            if match.group(group):
-                expr_text = match.group(group)
-                break
-
-        if expr_text:
-            expr_text = normalize_expression(expr_text)
-            inline_math = f"<<MATH: {expr_text} >>"
-            new_text.append(inline_math)
-        last_end = end
-
-    new_text.append(text[last_end:])
-    return ''.join(new_text)
 
 ###################################
 #
@@ -167,7 +98,7 @@ def load_files(data_dir: str):
         documents = files.load_data(show_progress=True)
         processed_docs = []
         for doc in documents: 
-            updated_text = insert_latex_inline(doc.text) 
+            updated_text = latex_helper.replace_latex_inline(doc.text) 
             processed_docs.append(
                 Document(
                     text=updated_text,
