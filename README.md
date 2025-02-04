@@ -1,4 +1,4 @@
-# 📚 Local RAG
+#Local RAG
 
 ![local-rag-demo](demo.gif)
 
@@ -7,12 +7,10 @@
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/jonfairbanks/local-rag)
 ![GitHub License](https://img.shields.io/github/license/jonfairbanks/local-rag)
 
-Offline, Open-Source RAG
+##About
+**Local RAG** is an **offline, open-source retrieval-augmented generation (RAG) system**. It allows users to ingest documents and perform AI-driven retrieval and reasoning with **math-aware** capabilities.
 
-Ingest files for retrieval augmented generation (RAG) with open-source Large Language Models (LLMs), all without 3rd parties or sensitive data leaving your network.
-
-Features:
-
+**Features**
 - Offline Embeddings & LLMs Support (No OpenAI!)
 - Support for Multiple Sources
     - Local Files
@@ -21,17 +19,15 @@ Features:
 - Streaming Responses
 - Conversational Memory
 - Chat Export
-- Mathematical Expression Handling
-  - LaTeX formula recognition and normalization
-  - Specialized math-aware retrieval
+- Math-Aware Retrieval
+  - LaTeX formula recognition
   - Context-aware equation indexing
 - Evaluation
-  - Automatic question generation
-  - Context-aware question generation
+  - Automatic context-aware question generation
   - Metrics calculation
   - Evaluation history
 
-Learn More:
+##Documentation & Guides
 
 - [Setup & Deploy the App](docs/setup.md)
 - [Using Local RAG](docs/usage.md)
