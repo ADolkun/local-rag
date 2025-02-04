@@ -161,7 +161,7 @@ def create_index(_nodes):
 ###################################
 
 
-@st.cache_resource(show_spinner=False)
+# @st.cache_resource(show_spinner=False)
 def create_query_engine(_nodes):
     """
     Creates a query engine from the provided nodes.

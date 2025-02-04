@@ -18,7 +18,6 @@ from llama_index.core.query_engine.retriever_query_engine import RetrieverQueryE
 #
 ###################################
 
-@st.cache_resource(show_spinner=False)
 def create_client(host: str):
     """
     Creates a client for interacting with the Ollama API.
@@ -50,8 +49,6 @@ def create_client(host: str):
 #
 ###################################
 
-
-@st.cache_resource(show_spinner=False)
 def get_models():
     """
     Retrieves a list of available language models from the Ollama server.
