@@ -49,6 +49,7 @@ def create_client(host: str):
 #
 ###################################
 
+
 def get_models():
     """
     Retrieves a list of available language models from the Ollama server.

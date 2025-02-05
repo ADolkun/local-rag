@@ -21,6 +21,15 @@ Features:
 - Streaming Responses
 - Conversational Memory
 - Chat Export
+- Mathematical Expression Handling
+  - LaTeX formula recognition and normalization
+  - Specialized math-aware retrieval
+  - Context-aware equation indexing
+- Evaluation
+  - Automatic question generation
+  - Context-aware question generation
+  - Metrics calculation
+  - Evaluation history
 
 Learn More:
 
@@ -32,3 +41,5 @@ Learn More:
 - [Known Bugs & Issues](docs/todo.md#known-issues--bugs)
 - [Resources](docs/resources.md)
 - [Contributing](docs/contributing.md)
+- [Math Handling Guide](docs/math_handling.md)
+- [API Documentation](docs/api.md)

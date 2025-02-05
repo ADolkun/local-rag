@@ -1,21 +1,20 @@
 import os
-
 import streamlit as st
 
-from warnings import filterwarnings
-import utils.logs as logs
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-from llama_index.core.node_parser import SentenceSplitter
-
-# This is not used but required by llama-index and must be set FIRST
-os.environ["OPENAI_API_KEY"] = "sk-abc123"
-
 from llama_index.core import (
+    Document,
     VectorStoreIndex,
     SimpleDirectoryReader,
     Settings,
 )
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from llama_index.core.node_parser import SentenceSplitter
 
+import utils.logs as logs
+import utils.latex_helper as latex_helper
+
+# This is not used but required by llama-index and must be set FIRST
+os.environ["OPENAI_API_KEY"] = "sk-abc123"
 
 
 ###################################
@@ -97,7 +96,17 @@ def load_files(data_dir: str):
         
         files = SimpleDirectoryReader(input_dir=data_dir, recursive=True)
         documents = files.load_data(show_progress=True)
-        nodes = node_parser.get_nodes_from_documents(documents, show_progress=True)
+        processed_docs = []
+        for doc in documents: 
+            updated_text = latex_helper.replace_latex_inline(doc.text) 
+            processed_docs.append(
+                Document(
+                    text=updated_text,
+                    metadata=doc.metadata
+                )
+            )
+
+        nodes = node_parser.get_nodes_from_documents(processed_docs, show_progress=True)
         # by default, the node ids are set to random uuids. To ensure same id's per run, we manually set them.
         for idx, node in enumerate(nodes):
             node.id_ = f"node_{idx}"
@@ -182,7 +191,7 @@ def create_query_engine(_nodes):
     """
     try:
         index = create_index(_nodes)
-
+        
         query_engine = index.as_query_engine(
             similarity_top_k=st.session_state["top_k"],
             response_mode=st.session_state["chat_mode"],
@@ -190,10 +199,10 @@ def create_query_engine(_nodes):
         )
 
         st.session_state["query_engine"] = query_engine
-
-        logs.log.info("Query Engine created successfully")
-
+        logs.log.info("Latex-aware query engine created successfully")
         return query_engine
+    
     except Exception as e:
-        logs.log.error(f"Error when creating Query Engine: {e}")
-        raise Exception(f"Error when creating Query Engine: {e}")
+        logs.log.error(f"Error creating query engine: {e}")
+        raise
+
