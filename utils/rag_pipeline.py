@@ -1,7 +1,6 @@
 import os
-import sys
 import shutil
-import inspect
+from datetime import datetime
 
 import streamlit as st
 
@@ -9,7 +8,7 @@ import utils.helpers as func
 import utils.ollama as ollama
 import utils.llama_index as llama_index
 import utils.logs as logs
-
+import utils.evaluation as eval
 
 def rag_pipeline(uploaded_files: list = None):
     """
@@ -33,8 +32,8 @@ def rag_pipeline(uploaded_files: list = None):
 
     Side Effects:
         - Creates a service context using the provided Ollama model and embedding file.
-        - Loads documents from the current working directory or the provided list of files.
-        - Removes the loaded documents and any temporary files created during processing.
+        - Loads files from the current working directory or the provided list of files.
+        - Removes the loaded nodes and any temporary files created during processing.
     """
     error = None
 
@@ -106,33 +105,34 @@ def rag_pipeline(uploaded_files: list = None):
     # Load files from the data/ directory #
     #######################################
 
-    # if documents already exists in state
+    # if nodes already exists in state
     if (
-        st.session_state["documents"] is not None
-        and len(st.session_state["documents"]) > 0
+        st.session_state["nodes"] is not None
+        and len(st.session_state["nodes"]) > 0
     ):
-        logs.log.info("Documents are already available; skipping document loading")
+        logs.log.info("Nodes are already available; skipping node loading")
         st.caption("✔️ Processed File Data")
     else:
         try:
             save_dir = os.getcwd() + "/data"
-            documents = llama_index.load_documents(save_dir)
-            st.session_state["documents"] = documents
+            nodes = llama_index.load_files(save_dir)
+            st.session_state["nodes"] = nodes
             st.caption("✔️ Data Processed")
         except Exception as err:
-            logs.log.error(f"Document Load Error: {str(err)}")
+            logs.log.error(f"Node Load Error: {str(err)}")
             error = err
             st.exception(error)
             st.stop()
 
     ###########################################
-    # Create an index from ingested documents #
+    # Create an index from ingested nodes #
     ###########################################
 
     try:
-        llama_index.create_query_engine(
-            st.session_state["documents"],
+        query_engine = llama_index.create_query_engine(
+            st.session_state["nodes"],
         )
+        st.session_state["query_engine"] = query_engine
         st.caption("✔️ Created File Index")
     except Exception as err:
         logs.log.error(f"Index Creation Error: {str(err)}")

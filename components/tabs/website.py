@@ -37,15 +37,15 @@ def website():
         process_button = st.button("Process", key="process_website")
 
         if process_button:
-            documents = SimpleWebPageReader(html_to_text=True).load_data(
+            nodes = SimpleWebPageReader(html_to_text=True).load_data(
                 st.session_state["websites"]
             )
 
-            if len(documents) > 0:
-                st.session_state["documents"] = documents
+            if len(nodes) > 0:
+                st.session_state["nodes"] = nodes
 
                 with st.spinner("Processing..."):
-                    # Initiate the RAG pipeline, providing documents to be saved on disk if necessary
+                    # Initiate the RAG pipeline, providing nodes to be saved on disk if necessary
                     error = rag.rag_pipeline()
 
                     # Display errors (if any) or proceed

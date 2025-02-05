@@ -4,7 +4,7 @@ The RAG pipeline in Local RAG utilizes the `SimpleDirectoryReader()` function fr
 
 ## File Processing and Embedding
 
-For each file, the pipeline creates multiple documents from a single file. For instance, when given a multi-page PDF, it splits it into one document per page. The documents are then chunked and embedded using the default settings provided by `llama-index`. However, users have the flexibility to customize these settings via the user interface, allowing them to experiment with different configurations.
+For each file, the pipeline creates multiple nodes from a single file. For instance, when given a multi-page PDF, it splits it into one document per page. The documents are then chunked and embedded using the default settings provided by `llama-index`. However, users have the flexibility to customize these settings via the user interface, allowing them to experiment with different configurations.
 
 ## Key Parameters for Customization
 

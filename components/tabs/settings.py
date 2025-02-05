@@ -1,10 +1,10 @@
 import json
+from datetime import datetime
 
 import streamlit as st
 
 import utils.ollama as ollama
-
-from datetime import datetime
+from utils.evaluation import run_retrieval_evaluation
 
 
 def settings():
@@ -35,7 +35,7 @@ def settings():
             st.select_slider(
                 "Top K",
                 options=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-                help="The number of most similar documents to retrieve in response to a query.",
+                help="The number of most similar nodes to retrieve in response to a query.",
                 value=st.session_state["top_k"],
                 key="top_k",
             )
@@ -100,6 +100,64 @@ def settings():
                 value=st.session_state["chunk_overlap"],
             )
 
+    st.subheader(
+            "Retrieval Evaluation",
+            help="Evaluate retrieval performance using test questions generated from your files",
+        )
+    eval_settings = st.container(border=True)
+    with eval_settings:
+        if st.button(
+            "Run Evaluation Now",
+            disabled=not st.session_state["nodes"],
+            help="Generate new evaluation using current documents and settings",
+            use_container_width=True
+        ):
+            with st.spinner("Running evaluation..."):
+                try:
+                    run_retrieval_evaluation()
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Evaluation failed: {str(e)}")
+    
+    if st.session_state.get("eval_metrics", None):
+        tab1, tab2 = st.tabs(["Core Metrics", "Advanced"])
+        with tab1:
+            cols = st.columns(2)
+            cols[0].metric(
+                "Hit Rate", 
+                f"{st.session_state['eval_metrics']['hit_rate']*100:.1f}%",
+                help="Percentage of queries where correct document was in top results"
+            )
+            cols[1].metric(
+                "MRR", 
+                f"{st.session_state['eval_metrics']['mrr']:.2f}",
+                help="Mean Reciprocal Rank of first correct document"
+            )
+        
+        with tab2:
+            st.caption("Additional Statistics")
+            st.write(f"Total Queries: {st.session_state['eval_metrics'].get('num_queries', 'N/A')}")
+            st.write(f"Evaluation Time: {st.session_state['eval_metrics'].get('eval_time', 'N/A')}")
+
+            if len(st.session_state["eval_history"]) > 0:
+                with st.expander("Evaluation History", expanded=False):
+                    for entry in reversed(st.session_state["eval_history"]):
+                        st.caption(f"{entry['timestamp']}")
+                        cols = st.columns(2)
+                        cols[0].metric(
+                            "Hit Rate", 
+                            f"{entry['metrics']['hit_rate']*100:.1f}%",
+                            help="Historical hit rate"
+                        )
+                        cols[1].metric(
+                            "MRR", 
+                            f"{entry['metrics']['mrr']:.2f}",
+                            help="Historical mean reciprocal rank"
+                        )
+                    
+                    if st.button("Clear History", use_container_width=True):
+                        st.session_state.eval_history = []
+
     st.subheader("Export Data")
     export_data_settings = st.container(border=True)
     with export_data_settings:
@@ -117,3 +175,4 @@ def settings():
         with st.expander("Current Application State"):
             state = dict(sorted(st.session_state.items()))
             st.write(state)
+

@@ -18,7 +18,6 @@ from llama_index.core.query_engine.retriever_query_engine import RetrieverQueryE
 #
 ###################################
 
-
 def create_client(host: str):
     """
     Creates a client for interacting with the Ollama API.
@@ -50,7 +49,6 @@ def create_client(host: str):
 #
 ###################################
 
-
 def get_models():
     """
     Retrieves a list of available language models from the Ollama server.
@@ -71,11 +69,7 @@ def get_models():
     """
     try:
         chat_client = create_client(st.session_state["ollama_endpoint"])
-        data = chat_client.list()
-        models = []
-        for model in data["models"]:
-            models.append(model["name"])
-
+        models = [model["name"] for model in chat_client.list()["models"]]
         st.session_state["ollama_models"] = models
 
         if len(models) > 0:
