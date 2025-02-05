@@ -21,7 +21,7 @@ curl -X POST "http://localhost:8000/api/math-query" \
 -H "Content-Type: application/json" \
 -d '{ 
     "question": "What is the formula for Bayes'\'' theorem?" 
-    }'
+    }' | python -m json.tool
 
 ```
 

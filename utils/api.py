@@ -1,5 +1,6 @@
-import threading, uvicorn
+import threading, uvicorn, json
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Dict, Optional
 from llama_index.core.base.response.schema import Response
@@ -11,15 +12,9 @@ from utils.latex_helper import replace_latex_inline
 class MathQuery(BaseModel):
     question: str
 
-class SourceReference(BaseModel):
-    file_name: str
-    page: Optional[int]
-    text: str
-    score: float
-
 class MathResponse(BaseModel):
     response: str
-    references: Dict[str, SourceReference]
+    references: Dict
 
 global_query_engine: Optional[RetrieverQueryEngine] = None
 api_thread: Optional[threading.Thread] = None
@@ -103,12 +98,12 @@ async def process_math_query(query: MathQuery):
         references = {}
         if hasattr(response, 'source_nodes'):
             for i, node in enumerate(response.source_nodes):
-                references[f"Reference {i+1}"] = SourceReference(
-                    file_name=node.metadata.get('file_name', 'Unknown'),
-                    page=int(node.metadata['page_label']) if 'page_label' in node.metadata else None,
-                    text=node.text[:100] + "..." if len(node.text) > 100 else node.text,
-                    score=round(node.score, 3) if hasattr(node, 'score') else 0.0
-                )
+                references[f"Reference {i+1}"] = {
+                    "file_name": node.metadata.get('file_name', 'Unknown'),
+                    "page": int(node.metadata['page_label']) if 'page_label' in node.metadata else None,
+                    "text": node.text[:100] + "..." if len(node.text) > 100 else node.text,
+                    "score": round(node.score, 3) if hasattr(node, 'score') else 0.0
+                }
 
         return MathResponse(
             response=str(response),
