@@ -1,13 +1,12 @@
 import os
 import shutil
-
 import streamlit as st
 
 import utils.helpers as func
 import utils.ollama as ollama
 import utils.llama_index as llama_index
 import utils.logs as logs
-import utils.evaluation as eval
+from utils.api import set_query_engine, start_api
 
 def rag_pipeline(uploaded_files: list = None):
     """
@@ -132,12 +131,18 @@ def rag_pipeline(uploaded_files: list = None):
             st.session_state["nodes"],
         )
         st.session_state["query_engine"] = query_engine
+        set_query_engine(query_engine)
         st.caption("✔️ Created File Index")
     except Exception as err:
         logs.log.error(f"Index Creation Error: {str(err)}")
         error = err
         st.exception(error)
         st.stop()
+
+    if st.session_state["query_engine"]:
+        st.caption("✔️ API Started") if start_api() else st.caption("✔️ API Query Engine Updated")
+    else:
+        st.caption("❌ API Not Started")
 
     #####################
     # Remove data files #

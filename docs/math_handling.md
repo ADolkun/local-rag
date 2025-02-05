@@ -32,3 +32,8 @@ to 6. Sample space = \{1, 2, 3, 4, 5, 6\}. What are some possible events?
 4. What is the integral of $e^{-x^2}$
 
 
+## Potential Improvements
+
+1. **Enhance LaTeX Parsing**
+    - Use libraries like `sympy` or `pylatexenc` to handle nested expressions and complex mathematical notations
+    - Could be implemented for indexing and retrieval to improve accuracy
