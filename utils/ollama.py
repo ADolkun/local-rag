@@ -70,7 +70,7 @@ def get_models():
     """
     try:
         chat_client = create_client(st.session_state["ollama_endpoint"])
-        models = [model["name"] for model in chat_client.list()["models"]]
+        models = [model.model for model in chat_client.list()["models"]]
         st.session_state["ollama_models"] = models
 
         if len(models) > 0:

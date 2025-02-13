@@ -17,10 +17,13 @@ html2text = "*"
 streamlit-tags = "*"
 streamlit-extras = "*"
 black = "*"
-torch = { version = "*", sys_platform = "!= 'darwin'" }
 colorama = { version = "*", sys_platform = "== 'win32'" }
 ebooklib = "*"
 llama-index-core = "*"
+fastapi = "*"
+uvicorn = "*"
+filelock = "*"
+torch = "*"
 
 [dev-packages]
 

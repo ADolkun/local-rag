@@ -53,7 +53,7 @@ def start_api():
     api_thread.start()
     logs.log.info("API started on port 8000")
     return True
-
+ 
 def set_query_engine(query_engine: RetrieverQueryEngine):
     """
     Set the global query engine instance.
@@ -68,7 +68,7 @@ def set_query_engine(query_engine: RetrieverQueryEngine):
         This should automatically be called from the Streamlit app when the query engine is created.
     """
     global global_query_engine
-    global_query_engine = query_engine
+    global_query_engine = query_engine 
 
 @app.post("/api/math-query", response_model=MathResponse)
 async def process_math_query(query: MathQuery):
